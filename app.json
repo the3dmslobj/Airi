@@ -39,7 +39,13 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Airi to use your location."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
