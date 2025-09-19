@@ -1,9 +1,67 @@
 import currentBg from "@/assets/images/current-bg.png";
-import sunny from "@/assets/images/icon-sunny.webp";
-import React from "react";
+import { CurrentWeatherType } from "@/interfaces/weather.interface";
+import { fetchWeatherData } from "@/services/api";
+import { useCurrentLocation } from "@/services/location";
+import { getCurrentDate } from "@/utils/currentDate";
+import { getWeatherImageSource } from "@/utils/weatherImage";
+import React, { useEffect, useState } from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
 
 const CurrentWeather = () => {
+  const { location, error } = useCurrentLocation();
+
+  const [weather, setWeather] = useState<CurrentWeatherType | null>(null);
+  const [timezone, setTimezone] = useState<string>("");
+
+  const [city, setCity] = useState<string>("");
+
+  const [currentDate, setCurrentDate] = useState<string>("");
+
+  /*
+  useEffect(() => {
+    async function setCityFunc() {
+      if (!location) return;
+      const res = await reverseGeocode(
+        location?.coords.latitude,
+        location?.coords.longitude
+      );
+
+      if (!res || res?.error) return;
+
+      setCity(`${res.address?.city}, ${res.display_name.split(", ").at(-1)}`);
+      console.log(res);
+    }
+
+    setCityFunc();
+  }, [location]);
+  */
+
+  useEffect(() => {
+    async function getCurrentWeather() {
+      if (!location) return;
+      const { current, timezone } = await fetchWeatherData(
+        location?.coords.latitude,
+        location?.coords.longitude
+      );
+
+      if (!current || !timezone) return;
+      setWeather(current);
+      setTimezone(timezone);
+    }
+
+    getCurrentWeather();
+  }, [location]);
+
+  useEffect(() => {
+    function setCurrentDateFunc() {
+      const date = getCurrentDate(timezone);
+      if (!date) return;
+      setCurrentDate(date);
+    }
+
+    setCurrentDateFunc();
+  }, [timezone]);
+
   return (
     <View className="flex flex-col gap-8">
       <ImageBackground
@@ -11,11 +69,14 @@ const CurrentWeather = () => {
         resizeMode="stretch"
         className="py-16 flex flex-col items-center gap-4 w-full"
       >
-        <Text className="text-4xl font-dmBold text-n0">Berlin, Germany</Text>
-        <Text className="text-2xl font-dm text-n200">Tuesday, Aug 5, 2025</Text>
+        <Text className="text-4xl font-dmBold text-n0">{city}</Text>
+        <Text className="text-2xl font-dm text-n200">{currentDate}</Text>
         <View className="flex flex-row gap-5 items-center">
-          <Image source={sunny} className="w-40 h-40" />
-          <Text className="text-9xl font-dmSemiBoldItalic pt-10 pr-1 text-n0">{`30\u00B0`}</Text>
+          <Image
+            source={getWeatherImageSource(weather?.weather_code as number)}
+            className="w-40 h-40"
+          />
+          <Text className="text-9xl font-dmSemiBoldItalic pt-10 pr-1 text-n0">{`${weather?.temperature_2m.toFixed(0)}\u00B0`}</Text>
         </View>
       </ImageBackground>
 
@@ -23,24 +84,30 @@ const CurrentWeather = () => {
         <View className="flex flex-row gap-7">
           <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
             <Text className="text-n200 text-2xl font-dm">Feels Like</Text>
-            <Text className="text-n0 text-4xl font-dmLight">{`18\u00B0`}</Text>
+            <Text className="text-n0 text-4xl font-dmLight">{`${weather?.apparent_temperature.toFixed(0)}\u00B0`}</Text>
           </View>
 
           <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
             <Text className="text-n200 text-2xl font-dm">Humidity</Text>
-            <Text className="text-n0 text-4xl font-dmLight">46%</Text>
+            <Text className="text-n0 text-4xl font-dmLight">
+              {weather?.relative_humidity_2m}%
+            </Text>
           </View>
         </View>
 
         <View className="flex flex-row gap-7">
           <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
-            <Text className="text-n200 text-2xl font-dm">Feels Like</Text>
-            <Text className="text-n0 text-4xl font-dmLight">{`18\u00B0`}</Text>
+            <Text className="text-n200 text-2xl font-dm">Wind</Text>
+            <Text className="text-n0 text-4xl font-dmLight">
+              {weather?.wind_speed_10m.toFixed(0)} km/h
+            </Text>
           </View>
 
           <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
-            <Text className="text-n200 text-2xl font-dm">Humidity</Text>
-            <Text className="text-n0 text-4xl font-dmLight">46%</Text>
+            <Text className="text-n200 text-2xl font-dm">Precipitation</Text>
+            <Text className="text-n0 text-4xl font-dmLight">
+              {weather?.precipitation} mm
+            </Text>
           </View>
         </View>
       </View>
