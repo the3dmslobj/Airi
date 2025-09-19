@@ -1,7 +1,6 @@
 import CurrentWeather from "@/components/CurrentWeather";
 import DailyForecast from "@/components/DailyForecast";
 import HourlyForecast from "@/components/HourlyForecast";
-import { fetchWeatherData } from "@/services/api";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -20,24 +19,11 @@ import SearchBar from "../components/SearchBar";
 export default function Index() {
   const { query } = useLocalSearchParams();
   const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState<boolean>(false);
-  const [isDayDropDownOpen, setIsDayDropDownOpen] = useState<boolean>(false);
 
   const unitsOp = useRef(new Animated.Value(0)).current;
-  const daysOp = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    fetchWeatherData();
-  });
 
   Animated.timing(unitsOp, {
     toValue: isUnitDropdownOpen ? 1 : 0,
-    duration: 300,
-    easing: Easing.out(Easing.cubic),
-    useNativeDriver: true,
-  }).start();
-
-  Animated.timing(daysOp, {
-    toValue: isDayDropDownOpen ? 1 : 0,
     duration: 300,
     easing: Easing.out(Easing.cubic),
     useNativeDriver: true,
