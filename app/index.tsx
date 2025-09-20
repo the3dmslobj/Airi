@@ -160,7 +160,10 @@ export default function Index() {
 
           <DailyForecast dailyForecastData={weather?.daily!} />
 
-          <HourlyForecast />
+          <HourlyForecast
+            hourlyForecastData={weather?.hourly!}
+            timezone={weather?.timezone!}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -1,7 +1,7 @@
 import { DailyWeatherType } from "@/interfaces/weather.interface";
 import { isoToWeekday } from "@/utils/utils";
 import { getWeatherImageSource } from "@/utils/weatherImage";
-import React, { useEffect } from "react";
+import React from "react";
 import { FlatList, Image, Text, View } from "react-native";
 
 interface DailyForecastPropsType {
@@ -9,10 +9,6 @@ interface DailyForecastPropsType {
 }
 
 const DailyForecast = ({ dailyForecastData }: DailyForecastPropsType) => {
-  useEffect(() => {
-    console.log(dailyForecastData);
-  }, [dailyForecastData]);
-
   if (!dailyForecastData) return;
 
   return (
