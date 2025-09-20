@@ -1,4 +1,9 @@
 import { CityResult } from "./city.interface";
+import {
+  CurrentWeatherType,
+  DailyWeatherType,
+  HourlyWeatherType,
+} from "./weather.interface";
 
 export type CityResponse = CityResult[];
 
@@ -36,4 +41,11 @@ export interface LocationIqReverseResponse {
 
   // Some responses include an "error" field on failure/rate limit
   error?: string;
+}
+
+export interface WeatherResponse {
+  timezone: string;
+  current: CurrentWeatherType;
+  daily: DailyWeatherType;
+  hourly: HourlyWeatherType;
 }

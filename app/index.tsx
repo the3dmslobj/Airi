@@ -1,6 +1,9 @@
 import CurrentWeather from "@/components/CurrentWeather";
 import DailyForecast from "@/components/DailyForecast";
 import HourlyForecast from "@/components/HourlyForecast";
+import { WeatherResponse } from "@/interfaces/response.interface";
+import { fetchWeatherData } from "@/services/api";
+import { useCurrentLocation } from "@/services/location";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -18,6 +21,12 @@ import SearchBar from "../components/SearchBar";
 
 export default function Index() {
   const { query } = useLocalSearchParams();
+
+  const { location, error } = useCurrentLocation();
+
+  const [weather, setWeather] = useState<WeatherResponse | null>(null);
+  const [timezone, setTimezone] = useState<string>("");
+
   const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState<boolean>(false);
 
   const unitsOp = useRef(new Animated.Value(0)).current;
@@ -32,6 +41,21 @@ export default function Index() {
   useEffect(() => {
     console.log(query);
   }, [query]);
+
+  useEffect(() => {
+    async function getWeather() {
+      if (!location) return;
+      const weatherData = await fetchWeatherData(
+        location?.coords.latitude,
+        location?.coords.longitude
+      );
+
+      if (!weatherData) return;
+      setWeather(weatherData);
+    }
+
+    getWeather();
+  }, [location]);
 
   return (
     <SafeAreaView className="flex-1 bg-n900">
@@ -129,9 +153,12 @@ export default function Index() {
         <SearchBar />
 
         <View className="flex flex-col gap-8">
-          <CurrentWeather />
+          <CurrentWeather
+            currentWeatherData={weather?.current!}
+            timezone={weather?.timezone!}
+          />
 
-          <DailyForecast />
+          <DailyForecast dailyForecastData={weather?.daily!} />
 
           <HourlyForecast />
         </View>

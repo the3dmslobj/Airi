@@ -30,7 +30,10 @@ export async function fetchWeatherData(lat: number, lon: number) {
   const latitude = response.latitude();
   const longitude = response.longitude();
   const elevation = response.elevation();
-  const timezone = response.timezone();
+  const timezone =
+    response.timezone() ??
+    Intl.DateTimeFormat().resolvedOptions().timeZone ??
+    "UTC";
   const timezoneAbbreviation = response.timezoneAbbreviation();
   const utcOffsetSeconds = response.utcOffsetSeconds();
 
@@ -46,6 +49,12 @@ export async function fetchWeatherData(lat: number, lon: number) {
   const daily = response.daily()!;
 
   // Note: The order of weather variables in the URL query and the indices below need to match!
+  const dailyWeatherCode = daily.variables(0)?.valuesArray();
+  const dailyTempMax = daily.variables(1)?.valuesArray();
+  const dailyTempMin = daily.variables(2)?.valuesArray();
+  const hourlyTemperature = hourly.variables(0)?.valuesArray();
+  const hourlyWeatherCode = hourly.variables(1)?.valuesArray();
+
   const weatherData = {
     current: {
       time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
@@ -68,8 +77,8 @@ export async function fetchWeatherData(lat: number, lon: number) {
               1000
           )
       ),
-      temperature_2m: hourly.variables(0)!.valuesArray(),
-      weather_code: hourly.variables(1)!.valuesArray(),
+      temperature_2m: hourlyTemperature ? Array.from(hourlyTemperature) : [],
+      weather_code: hourlyWeatherCode ? Array.from(hourlyWeatherCode) : [],
     },
     daily: {
       time: [
@@ -83,9 +92,9 @@ export async function fetchWeatherData(lat: number, lon: number) {
               1000
           )
       ),
-      weather_code: daily.variables(0)!.valuesArray(),
-      temperature_2m_max: daily.variables(1)!.valuesArray(),
-      temperature_2m_min: daily.variables(2)!.valuesArray(),
+      weather_code: dailyWeatherCode ? Array.from(dailyWeatherCode) : [],
+      temperature_2m_max: dailyTempMax ? Array.from(dailyTempMax) : [],
+      temperature_2m_min: dailyTempMin ? Array.from(dailyTempMin) : [],
     },
   };
 

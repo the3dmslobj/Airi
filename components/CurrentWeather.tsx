@@ -1,17 +1,21 @@
 import currentBg from "@/assets/images/current-bg.png";
 import { CurrentWeatherType } from "@/interfaces/weather.interface";
-import { fetchWeatherData } from "@/services/api";
 import { useCurrentLocation } from "@/services/location";
 import { getCurrentDate } from "@/utils/currentDate";
 import { getWeatherImageSource } from "@/utils/weatherImage";
 import React, { useEffect, useState } from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
 
-const CurrentWeather = () => {
-  const { location, error } = useCurrentLocation();
+interface CurrentWeatherPropsType {
+  currentWeatherData: CurrentWeatherType;
+  timezone: string;
+}
 
-  const [weather, setWeather] = useState<CurrentWeatherType | null>(null);
-  const [timezone, setTimezone] = useState<string>("");
+const CurrentWeather = ({
+  currentWeatherData,
+  timezone,
+}: CurrentWeatherPropsType) => {
+  const { location, error } = useCurrentLocation();
 
   const [city, setCity] = useState<string>("");
 
@@ -37,22 +41,6 @@ const CurrentWeather = () => {
   */
 
   useEffect(() => {
-    async function getCurrentWeather() {
-      if (!location) return;
-      const { current, timezone } = await fetchWeatherData(
-        location?.coords.latitude,
-        location?.coords.longitude
-      );
-
-      if (!current || !timezone) return;
-      setWeather(current);
-      setTimezone(timezone);
-    }
-
-    getCurrentWeather();
-  }, [location]);
-
-  useEffect(() => {
     function setCurrentDateFunc() {
       const date = getCurrentDate(timezone);
       if (!date) return;
@@ -73,10 +61,12 @@ const CurrentWeather = () => {
         <Text className="text-2xl font-dm text-n200">{currentDate}</Text>
         <View className="flex flex-row gap-5 items-center">
           <Image
-            source={getWeatherImageSource(weather?.weather_code as number)}
+            source={getWeatherImageSource(
+              currentWeatherData?.weather_code as number
+            )}
             className="w-40 h-40"
           />
-          <Text className="text-9xl font-dmSemiBoldItalic pt-10 pr-1 text-n0">{`${weather?.temperature_2m.toFixed(0)}\u00B0`}</Text>
+          <Text className="text-9xl font-dmSemiBoldItalic pt-10 pr-1 text-n0">{`${currentWeatherData?.temperature_2m.toFixed(0)}\u00B0`}</Text>
         </View>
       </ImageBackground>
 
@@ -84,13 +74,13 @@ const CurrentWeather = () => {
         <View className="flex flex-row gap-7">
           <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
             <Text className="text-n200 text-2xl font-dm">Feels Like</Text>
-            <Text className="text-n0 text-4xl font-dmLight">{`${weather?.apparent_temperature.toFixed(0)}\u00B0`}</Text>
+            <Text className="text-n0 text-4xl font-dmLight">{`${currentWeatherData?.apparent_temperature.toFixed(0)}\u00B0`}</Text>
           </View>
 
           <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
             <Text className="text-n200 text-2xl font-dm">Humidity</Text>
             <Text className="text-n0 text-4xl font-dmLight">
-              {weather?.relative_humidity_2m}%
+              {currentWeatherData?.relative_humidity_2m}%
             </Text>
           </View>
         </View>
@@ -99,14 +89,14 @@ const CurrentWeather = () => {
           <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
             <Text className="text-n200 text-2xl font-dm">Wind</Text>
             <Text className="text-n0 text-4xl font-dmLight">
-              {weather?.wind_speed_10m.toFixed(0)} km/h
+              {currentWeatherData?.wind_speed_10m.toFixed(0)} km/h
             </Text>
           </View>
 
           <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
             <Text className="text-n200 text-2xl font-dm">Precipitation</Text>
             <Text className="text-n0 text-4xl font-dmLight">
-              {weather?.precipitation} mm
+              {currentWeatherData?.precipitation} mm
             </Text>
           </View>
         </View>

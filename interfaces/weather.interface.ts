@@ -1,20 +1,22 @@
 export interface CurrentWeatherType {
-  /** ISO string, e.g. "2025-09-19T08:45:00.000Z" */
   time: Date;
-
-  /** °C */
   temperature_2m: number;
-
-  /** °C (feels like) */
   apparent_temperature: number;
-
-  /** % */
   relative_humidity_2m: number;
-
-  /** mm (per interval, often 1h) */
   precipitation: number;
-
-  /** m/s */
+  weather_code: number; // e.g. 0 = clear, 45 = fog (depends on provider table)
   wind_speed_10m: number;
-  weather_code: number;
+}
+
+export interface DailyWeatherType {
+  time: Date[]; // one per day
+  weather_code: number[]; // same length as time
+  temperature_2m_max: number[]; // same length as time
+  temperature_2m_min: number[]; // same length as time
+}
+
+export interface HourlyWeatherType {
+  time: Date[]; // one per hour
+  weather_code: number[]; // same length as time
+  temperature_2m: number[]; // same length as time
 }
