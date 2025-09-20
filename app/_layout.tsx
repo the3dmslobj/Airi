@@ -3,6 +3,9 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 
+import { Provider } from "react-redux";
+
+import store from "@/store/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./global.css";
 
@@ -40,7 +43,9 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Provider store={store}>
+        <Stack screenOptions={{ headerShown: false }} />
+      </Provider>
     </QueryClientProvider>
   );
 }

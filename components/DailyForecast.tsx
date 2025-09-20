@@ -1,14 +1,20 @@
 import { DailyWeatherType } from "@/interfaces/weather.interface";
-import { isoToWeekday } from "@/utils/utils";
+import { RootState } from "@/store/store";
+import { convertTemp, isoToWeekday } from "@/utils/utils";
 import { getWeatherImageSource } from "@/utils/weatherImage";
 import React from "react";
 import { FlatList, Image, Text, View } from "react-native";
+import { useSelector } from "react-redux";
 
 interface DailyForecastPropsType {
   dailyForecastData: DailyWeatherType;
 }
 
 const DailyForecast = ({ dailyForecastData }: DailyForecastPropsType) => {
+  const { tempUnit, windUnit, precUnit } = useSelector(
+    (state: RootState) => state.units
+  );
+
   if (!dailyForecastData) return;
 
   return (
@@ -33,9 +39,9 @@ const DailyForecast = ({ dailyForecastData }: DailyForecastPropsType) => {
             />
 
             <View className="flex flex-row justify-between items-center w-full">
-              <Text className="text-xl font-md text-n0">{`${dailyForecastData?.temperature_2m_min[index].toFixed(0)}\u00B0`}</Text>
+              <Text className="text-xl font-md text-n0">{`${convertTemp(Number(dailyForecastData?.temperature_2m_min[index]), tempUnit)}\u00B0`}</Text>
 
-              <Text className="text-xl font-md text-n0">{`${dailyForecastData?.temperature_2m_max[index].toFixed(0)}\u00B0`}</Text>
+              <Text className="text-xl font-md text-n0">{`${convertTemp(Number(dailyForecastData?.temperature_2m_max[index]), tempUnit)}\u00B0`}</Text>
             </View>
           </View>
         )}

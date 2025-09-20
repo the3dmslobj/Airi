@@ -1,11 +1,12 @@
 import { HourlyWeatherType } from "@/interfaces/weather.interface";
+import { RootState } from "@/store/store";
 import { getCurrentWeekday } from "@/utils/currentDate";
 import {
   filterHourlyByWeekday,
   WeekDayLongType,
   WEEKDAYS_LONG,
 } from "@/utils/hourlyFilter";
-import { isoToTime12h } from "@/utils/utils";
+import { convertTemp, isoToTime12h } from "@/utils/utils";
 import { getWeatherImageSource } from "@/utils/weatherImage";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
@@ -18,6 +19,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSelector } from "react-redux";
 
 interface HourlyForecastPropsType {
   hourlyForecastData: HourlyWeatherType;
@@ -73,6 +75,10 @@ const HourlyForecast = ({
     setCurrentDateFunc();
   }, [timezone]);
   */
+
+  const { tempUnit, windUnit, precUnit } = useSelector(
+    (state: RootState) => state.units
+  );
 
   return (
     <View className="flex flex-col gap-4 px-4 py-5 bg-n800 rounded-xl -mt-2">
@@ -131,7 +137,7 @@ const HourlyForecast = ({
               className="w-16 h-16"
             />
             <Text className="text-2xl font-dm text-n0">{isoToTime12h(t)}</Text>
-            <Text className="ml-auto text-2xl font-dm text-n0">{`${hourlyWeatherData?.temperature_2m[i].toFixed(0)}\u00B0`}</Text>
+            <Text className="ml-auto text-2xl font-dm text-n0">{`${convertTemp(Number(hourlyForecastData?.temperature_2m[i]), tempUnit)}\u00B0`}</Text>
           </View>
         ))}
       </View>
