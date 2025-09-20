@@ -66,7 +66,7 @@ const CurrentWeather = ({
             )}
             className="w-40 h-40"
           />
-          <Text className="text-9xl font-dmSemiBoldItalic pt-10 pr-1 text-n0">{`${currentWeatherData?.temperature_2m.toFixed(0)}\u00B0`}</Text>
+          <Text className="text-9xl font-dmSemiBoldItalic pt-10 pr-1 text-n0">{`${currentWeatherData ? currentWeatherData?.temperature_2m.toFixed(0) : "-"}\u00B0`}</Text>
         </View>
       </ImageBackground>
 

@@ -20,12 +20,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "../components/SearchBar";
 
 export default function Index() {
-  const { query } = useLocalSearchParams();
+  const { query, lat, lon } = useLocalSearchParams();
 
   const { location, error } = useCurrentLocation();
 
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
-  const [timezone, setTimezone] = useState<string>("");
 
   const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState<boolean>(false);
 
@@ -44,18 +43,35 @@ export default function Index() {
 
   useEffect(() => {
     async function getWeather() {
-      if (!location) return;
-      const weatherData = await fetchWeatherData(
-        location?.coords.latitude,
-        location?.coords.longitude
-      );
+      if (lat && lon) {
+        const weatherData = await fetchWeatherData(Number(lat), Number(lon));
+
+        if (!weatherData) return;
+        setWeather(weatherData);
+        return;
+      }
+
+      if (!location?.coords) return;
+
+      const { latitude, longitude } = location.coords;
+
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+        console.warn(
+          "Skipping weather fetch due to invalid coordinates",
+          latitude,
+          longitude
+        );
+        return;
+      }
+
+      const weatherData = await fetchWeatherData(latitude, longitude);
 
       if (!weatherData) return;
       setWeather(weatherData);
     }
 
     getWeather();
-  }, [location]);
+  }, [location, lat, lon]);
 
   return (
     <SafeAreaView className="flex-1 bg-n900">

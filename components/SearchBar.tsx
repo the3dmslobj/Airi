@@ -65,6 +65,14 @@ const SearchBar = () => {
             cities?.length !== 0 ? (
               cities?.map((city, index) => (
                 <TouchableOpacity
+                  onPress={() => {
+                    router.setParams({
+                      lat: city.latitude,
+                      lon: city.longitude,
+                    });
+                    setSearchQuery("");
+                    router.setParams({ query: "" });
+                  }}
                   className="px-2 py-2.5 rounded-lg"
                   key={index}
                 >

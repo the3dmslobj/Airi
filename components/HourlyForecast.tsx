@@ -8,6 +8,7 @@ import {
 import { isoToTime12h } from "@/utils/utils";
 import { getWeatherImageSource } from "@/utils/weatherImage";
 import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -31,6 +32,12 @@ const HourlyForecast = ({
     getCurrentWeekday(timezone)
   );
 
+  const { lat, lon } = useLocalSearchParams();
+
+  useEffect(() => {
+    setCurrentDate(getCurrentWeekday(timezone));
+  }, [lat, lon]);
+
   const [hourlyWeatherData, setHourlyWeatherData] = useState<
     HourlyWeatherType | undefined
   >(undefined);
@@ -53,7 +60,7 @@ const HourlyForecast = ({
     if (!res) return;
 
     setHourlyWeatherData(res);
-  }, [currentDate]);
+  }, [currentDate, hourlyForecastData]);
 
   /*
   useEffect(() => {
