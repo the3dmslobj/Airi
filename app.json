@@ -7,7 +7,6 @@
     "icon": "./assets/images/airi-icon.png",
     "scheme": "airi",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.Airi"
@@ -17,7 +16,6 @@
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/airi-icon.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -49,7 +47,10 @@
         {
           "locationWhenInUsePermission": "Allow Airi to use your location."
         }
-      ]
+      ],
+      "expo-image",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
