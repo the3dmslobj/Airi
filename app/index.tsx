@@ -14,7 +14,7 @@ import {
 import { AppDispatch, RootState } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import {
   Animated,
@@ -32,6 +32,7 @@ import SearchBar from "../components/SearchBar";
 
 export default function Index() {
   const { query, lat, lon } = useLocalSearchParams();
+  const router = useRouter();
 
   const { location } = useCurrentLocation();
 
@@ -82,7 +83,15 @@ export default function Index() {
         <View className="flex flex-row items-center justify-between">
           <Text className="text-n0 text-3xl font-briBold">Airi</Text>
 
-          <View className="relative">
+          <View className="flex flex-row items-center gap-2.5">
+            <TouchableOpacity
+              className="bg-n800 p-2.5 rounded-lg"
+              onPress={() => router.push("/locations")}
+            >
+              <Ionicons name="bookmark-outline" color={"white"} size={20} />
+            </TouchableOpacity>
+
+            <View className="relative">
             <Pressable
               className="flex flex-row gap-2.5 items-center font-dm bg-n800 p-2.5 rounded-lg"
               onPress={() => setIsUnitDropdownOpen(!isUnitDropdownOpen)}
@@ -225,6 +234,7 @@ export default function Index() {
                 </View>
               </View>
             </Animated.View>
+            </View>
           </View>
         </View>
 
