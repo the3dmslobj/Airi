@@ -8,7 +8,7 @@ import { getCurrentDate } from "@/utils/currentDate";
 import { convertPrec, convertTemp, convertWind } from "@/utils/utils";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -28,7 +28,7 @@ const CurrentWeather = ({
 
   const dispatch = useDispatch<AppDispatch>();
   const savedItems = useSelector(
-    (state: RootState) => state.savedLocations.items
+    (state: RootState) => state.savedLocations.items,
   );
 
   // A searched city carries id/name/country params; the device location does not.
@@ -58,7 +58,7 @@ const CurrentWeather = ({
       if (!location) return;
       const res = await reverseGeocode(
         location?.coords.latitude,
-        location?.coords.longitude
+        location?.coords.longitude,
       );
 
       if (!res || res?.error) return;
@@ -80,7 +80,7 @@ const CurrentWeather = ({
   }, [timezone]);
 
   const { tempUnit, windUnit, precUnit } = useSelector(
-    (state: RootState) => state.units
+    (state: RootState) => state.units,
   );
 
   const DetailCard = ({ label, value }: { label: string; value: string }) => (
@@ -110,7 +110,7 @@ const CurrentWeather = ({
                     country: String(country ?? ""),
                     latitude: Number(lat),
                     longitude: Number(lon),
-                  })
+                  }),
                 );
               }
             }}
@@ -146,7 +146,7 @@ const CurrentWeather = ({
           />
           <DetailCard
             label="Humidity"
-            value={`${currentWeatherData?.relative_humidity_2m}%`}
+            value={`${currentWeatherData?.relative_humidity_2m.toFixed(2)}%`}
           />
         </View>
 
