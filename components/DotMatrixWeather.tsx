@@ -288,6 +288,43 @@ function FallDots({
   );
 }
 
+// Dots that drift back and forth by whole cells (clouds bobbing, fog shifting).
+function DriftDots({
+  cells,
+  cell,
+  color,
+  animated,
+  axis = "y",
+  duration = 1800,
+}: {
+  cells: Cell[];
+  cell: number;
+  color: string;
+  animated: boolean;
+  axis?: "x" | "y";
+  duration?: number;
+}) {
+  const v = useSharedValue(0);
+  useEffect(() => {
+    if (!animated) return;
+    v.value = withRepeat(
+      withTiming(1, { duration, easing: Easing.steps(2, false) }),
+      -1,
+      true
+    );
+  }, [animated, duration, v]);
+
+  const style = useAnimatedStyle(() => {
+    const d = v.value * cell; // 0 -> 1 cell
+    return { transform: axis === "x" ? [{ translateX: d }] : [{ translateY: d }] };
+  });
+  return (
+    <Animated.View style={[{ position: "absolute", inset: 0 }, style]}>
+      <Dots cells={cells} cell={cell} color={color} />
+    </Animated.View>
+  );
+}
+
 interface DotMatrixWeatherProps {
   code: number;
   size: number;
@@ -324,9 +361,20 @@ export default function DotMatrixWeather({
         </>
       )}
 
-      {scene === "cloudy" && <Dots cells={CLOUD} cell={cell} color={COL.on} />}
+      {scene === "cloudy" && (
+        <DriftDots cells={CLOUD} cell={cell} color={COL.on} animated={animated} />
+      )}
 
-      {scene === "fog" && <Dots cells={FOG} cell={cell} color={COL.dim} />}
+      {scene === "fog" && (
+        <DriftDots
+          cells={FOG}
+          cell={cell}
+          color={COL.dim}
+          animated={animated}
+          axis="x"
+          duration={1400}
+        />
+      )}
 
       {scene === "drizzle" && (
         <>
