@@ -3,7 +3,7 @@ import { View } from "react-native";
 
 // Placeholder blocks shown while the weather query is loading.
 const Block = ({ className }: { className: string }) => (
-  <View className={`bg-n800 rounded-xl ${className}`} />
+  <View className={`bg-surface2 border-2 border-border ${className}`} />
 );
 
 const WeatherSkeleton = () => {
