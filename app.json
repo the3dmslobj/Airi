@@ -4,7 +4,7 @@
     "slug": "Airi",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/airi-icon.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "airi",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -13,8 +13,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/airi-icon.png"
+        "backgroundColor": "#000000",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "monochromeImage": "./assets/images/monochrome-icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
@@ -25,17 +26,17 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/airi-icon.png"
+      "favicon": "./assets/images/icon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/airi-icon.png",
-          "imageWidth": 200,
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 220,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#000000",
           "dark": {
             "backgroundColor": "#000000"
           }
