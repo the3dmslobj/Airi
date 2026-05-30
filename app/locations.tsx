@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
 const C = { text: "#FFFFFF", dim: "#8A8A8A" };
@@ -12,6 +12,7 @@ const C = { text: "#FFFFFF", dim: "#8A8A8A" };
 export default function Locations() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
+  const insets = useSafeAreaInsets();
   const savedItems = useSelector(
     (state: RootState) => state.savedLocations.items
   );
@@ -22,7 +23,15 @@ export default function Locations() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <View
+      className="flex-1 bg-bg"
+      style={{
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+      }}
+    >
       <View className="flex flex-row items-center gap-4 px-4 py-4">
         <TouchableOpacity hitSlop={8} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={28} color={C.text} />
@@ -80,6 +89,6 @@ export default function Locations() {
           ))
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

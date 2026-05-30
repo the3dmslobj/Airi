@@ -94,37 +94,38 @@ const CurrentWeather = ({
 
   return (
     <View className="flex flex-col gap-8">
-      <View className="bg-surface border border-dotted border-line py-10 flex flex-col items-center gap-4 w-full">
-        <View className="flex flex-row items-center gap-2 px-4">
+      <View className="relative bg-surface border border-dotted border-line py-10 flex flex-col items-center gap-4 w-full">
+        {isSearchedCity && (
+          <TouchableOpacity
+            className="absolute top-3 right-3 z-10 p-1"
+            hitSlop={8}
+            onPress={() => {
+              if (isSaved) {
+                dispatch(removeLocation(searchedId as number));
+              } else {
+                dispatch(
+                  addLocation({
+                    id: searchedId as number,
+                    name: String(name ?? ""),
+                    country: String(country ?? ""),
+                    latitude: Number(lat),
+                    longitude: Number(lon),
+                  })
+                );
+              }
+            }}
+          >
+            <Ionicons
+              name={isSaved ? "star" : "star-outline"}
+              size={16}
+              color={C.text}
+            />
+          </TouchableOpacity>
+        )}
+        <View className="flex flex-row items-center px-4">
           <Text className="text-base font-monoBold text-text text-center">
             {city}
           </Text>
-          {isSearchedCity && (
-            <TouchableOpacity
-              hitSlop={8}
-              onPress={() => {
-                if (isSaved) {
-                  dispatch(removeLocation(searchedId as number));
-                } else {
-                  dispatch(
-                    addLocation({
-                      id: searchedId as number,
-                      name: String(name ?? ""),
-                      country: String(country ?? ""),
-                      latitude: Number(lat),
-                      longitude: Number(lon),
-                    })
-                  );
-                }
-              }}
-            >
-              <Ionicons
-                name={isSaved ? "star" : "star-outline"}
-                size={24}
-                color={C.text}
-              />
-            </TouchableOpacity>
-          )}
         </View>
         <Text className="text-sm font-mono text-textDim">{currentDate}</Text>
         <View className="flex flex-row gap-4 items-center">
