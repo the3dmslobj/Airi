@@ -1,8 +1,8 @@
+import { Doto_500Medium, Doto_700Bold } from "@expo-google-fonts/doto";
 import {
-  Silkscreen_400Regular,
-  Silkscreen_700Bold,
-} from "@expo-google-fonts/silkscreen";
-import { VT323_400Regular } from "@expo-google-fonts/vt323";
+  SpaceMono_400Regular,
+  SpaceMono_700Bold,
+} from "@expo-google-fonts/space-mono";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -23,9 +23,10 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    Silkscreen_400Regular,
-    Silkscreen_700Bold,
-    VT323_400Regular,
+    Doto_500Medium,
+    Doto_700Bold,
+    SpaceMono_400Regular,
+    SpaceMono_700Bold,
   });
 
   useEffect(() => {
