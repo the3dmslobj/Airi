@@ -1,4 +1,4 @@
-import PixelWeather from "@/components/PixelWeather";
+import DotMatrixWeather from "@/components/DotMatrixWeather";
 import { HourlyWeatherType } from "@/interfaces/weather.interface";
 import { RootState } from "@/store/store";
 import { getCurrentWeekday } from "@/utils/currentDate";
@@ -20,7 +20,7 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 
-const C = { text: "#FFF1E8" };
+const C = { text: "#FFFFFF" };
 
 interface HourlyForecastPropsType {
   hourlyForecastData: HourlyWeatherType;
@@ -68,18 +68,18 @@ const HourlyForecast = ({
   const { tempUnit } = useSelector((state: RootState) => state.units);
 
   return (
-    <View className="flex flex-col gap-4 px-4 py-5 bg-surface border-2 border-border -mt-2">
+    <View className="flex flex-col gap-4 px-4 py-5 bg-surface border border-dotted border-line -mt-2">
       <View className="flex flex-row items-center justify-between w-full">
-        <Text className="text-sm text-text font-pixel uppercase">
+        <Text className="text-sm text-text font-dot uppercase">
           Hourly Forecast
         </Text>
 
         <View className="relative">
           <TouchableOpacity
-            className="flex flex-row px-4 gap-3 items-center bg-surface2 border-2 border-border py-2"
+            className="flex flex-row px-4 gap-3 items-center bg-surface2 border border-dotted border-line py-2"
             onPress={() => setIsDayDropDownOpen(!isDayDropDownOpen)}
           >
-            <Text className="font-term text-xl text-text">
+            <Text className="font-mono text-base text-text">
               {currentDate.split(", ")[0]}
             </Text>
             <Ionicons
@@ -90,7 +90,7 @@ const HourlyForecast = ({
           </TouchableOpacity>
 
           <Animated.View
-            className={`bg-surface border-2 border-border absolute top-14 flex flex-col gap-1 p-2 w-[180px] right-0 z-10`}
+            className={`bg-surface border border-dotted border-line absolute top-14 flex flex-col gap-1 p-2 w-[190px] right-0 z-10`}
             style={{ opacity: daysOp }}
           >
             {WEEKDAYS_LONG.map((d, i) => (
@@ -102,7 +102,7 @@ const HourlyForecast = ({
                   setIsDayDropDownOpen(false);
                 }}
               >
-                <Text className="font-term text-xl text-text">{d}</Text>
+                <Text className="font-mono text-base text-text">{d}</Text>
               </TouchableOpacity>
             ))}
           </Animated.View>
@@ -113,17 +113,17 @@ const HourlyForecast = ({
         {hourlyWeatherData?.time?.map((t, i) => (
           <View
             key={i}
-            className="flex flex-row items-center py-2.5 pl-3 pr-4 bg-surface2 border-2 border-border gap-2"
+            className="flex flex-row items-center py-2.5 pl-3 pr-4 bg-surface2 border border-dotted border-line gap-3"
           >
-            <PixelWeather
+            <DotMatrixWeather
               code={hourlyWeatherData?.weather_code[i]}
-              size={44}
+              size={40}
               animated={false}
             />
-            <Text className="text-2xl font-term text-text">
+            <Text className="text-xl font-mono text-text">
               {isoToTime12h(t)}
             </Text>
-            <Text className="ml-auto text-2xl font-term text-text">{`${convertTemp(Number(hourlyForecastData?.temperature_2m[i]), tempUnit)}°`}</Text>
+            <Text className="ml-auto text-xl font-mono text-text">{`${convertTemp(Number(hourlyForecastData?.temperature_2m[i]), tempUnit)}°`}</Text>
           </View>
         ))}
       </View>

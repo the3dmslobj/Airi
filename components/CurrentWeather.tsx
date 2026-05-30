@@ -1,4 +1,4 @@
-import PixelWeather from "@/components/PixelWeather";
+import DotMatrixWeather from "@/components/DotMatrixWeather";
 import { CurrentWeatherType } from "@/interfaces/weather.interface";
 import { reverseGeocode } from "@/services/api";
 import { useCurrentLocation } from "@/services/location";
@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
-const C = { text: "#FFF1E8", sun: "#FFEC27" };
+const C = { text: "#FFFFFF" };
 
 interface CurrentWeatherPropsType {
   currentWeatherData: CurrentWeatherType;
@@ -84,19 +84,19 @@ const CurrentWeather = ({
   );
 
   const DetailCard = ({ label, value }: { label: string; value: string }) => (
-    <View className="p-5 bg-surface border-2 border-border flex flex-col gap-4 flex-1">
-      <Text className="text-textMuted text-xs font-pixel uppercase">
+    <View className="p-5 bg-surface border border-dotted border-line flex flex-col gap-3 flex-1">
+      <Text className="text-textDim text-[11px] font-dot uppercase">
         {label}
       </Text>
-      <Text className="text-text text-4xl font-term">{value}</Text>
+      <Text className="text-text text-3xl font-mono">{value}</Text>
     </View>
   );
 
   return (
     <View className="flex flex-col gap-8">
-      <View className="bg-surface border-2 border-border py-10 flex flex-col items-center gap-4 w-full">
+      <View className="bg-surface border border-dotted border-line py-10 flex flex-col items-center gap-4 w-full">
         <View className="flex flex-row items-center gap-2 px-4">
-          <Text className="text-base font-pixelBold text-text text-center">
+          <Text className="text-base font-monoBold text-text text-center">
             {city}
           </Text>
           {isSearchedCity && (
@@ -121,19 +121,19 @@ const CurrentWeather = ({
               <Ionicons
                 name={isSaved ? "star" : "star-outline"}
                 size={24}
-                color={isSaved ? C.sun : C.text}
+                color={C.text}
               />
             </TouchableOpacity>
           )}
         </View>
-        <Text className="text-xl font-term text-textDim">{currentDate}</Text>
+        <Text className="text-sm font-mono text-textDim">{currentDate}</Text>
         <View className="flex flex-row gap-4 items-center">
-          <PixelWeather
+          <DotMatrixWeather
             code={currentWeatherData?.weather_code as number}
-            size={128}
+            size={120}
             animated
           />
-          <Text className="text-8xl font-term text-text">{`${currentWeatherData ? convertTemp(Number(currentWeatherData?.temperature_2m), tempUnit) : "-"}°`}</Text>
+          <Text className="text-8xl font-dot text-text">{`${currentWeatherData ? convertTemp(Number(currentWeatherData?.temperature_2m), tempUnit) : "-"}°`}</Text>
         </View>
       </View>
 
