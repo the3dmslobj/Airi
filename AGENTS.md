@@ -13,6 +13,7 @@ Guidance for AI agents working in this repository (Airi — an Expo / React Nati
 
 ## Commits & workflow
 
+- **Do NOT use skills in this project** (no brainstorming, writing-plans, TDD, etc.). Work directly while still honoring these conventions.
 - **Split work into small, self-contained units and commit between each one.** Don't bundle unrelated changes into one large commit.
 - Use conventional commit prefixes: `feat:` (new feature), `fix:` (bug fix), `docs:` (docs), `chore:` (deps/maintenance/tooling).
 - **Do NOT add a `Co-Authored-By: Claude` trailer** to commit messages. Keep messages plain.
