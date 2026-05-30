@@ -1,6 +1,7 @@
 import CurrentWeather from "@/components/CurrentWeather";
 import DailyForecast from "@/components/DailyForecast";
 import HourlyForecast from "@/components/HourlyForecast";
+import WeatherSkeleton from "@/components/WeatherSkeleton";
 import { useCurrentLocation } from "@/services/location";
 import { weatherQueryOptions } from "@/services/queryOptions";
 import {
@@ -39,9 +40,12 @@ export default function Index() {
   const effectiveLat = lat ? Number(lat) : location?.coords.latitude;
   const effectiveLon = lon ? Number(lon) : location?.coords.longitude;
 
-  const { data: weather } = useQuery(
-    weatherQueryOptions(effectiveLat, effectiveLon)
-  );
+  const {
+    data: weather,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery(weatherQueryOptions(effectiveLat, effectiveLon));
 
   const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState<boolean>(false);
 
@@ -219,19 +223,40 @@ export default function Index() {
 
         <SearchBar />
 
-        <View className="flex flex-col gap-8">
-          <CurrentWeather
-            currentWeatherData={weather?.current!}
-            timezone={weather?.timezone!}
-          />
+        {isError ? (
+          <View className="bg-n800 border-[1px] border-n600 rounded-xl p-6 flex flex-col items-center gap-4">
+            <Ionicons name="cloud-offline-outline" size={40} color={"white"} />
+            <Text className="text-n0 text-2xl font-dmBold text-center">
+              Something went wrong
+            </Text>
+            <Text className="text-n200 text-lg font-dm text-center">
+              We couldn&apos;t load the weather. Check your connection and try
+              again.
+            </Text>
+            <TouchableOpacity
+              className="px-6 py-3 bg-b500 rounded-xl"
+              onPress={() => refetch()}
+            >
+              <Text className="text-n0 text-xl font-dm">Retry</Text>
+            </TouchableOpacity>
+          </View>
+        ) : isLoading || !weather ? (
+          <WeatherSkeleton />
+        ) : (
+          <View className="flex flex-col gap-8">
+            <CurrentWeather
+              currentWeatherData={weather.current}
+              timezone={weather.timezone}
+            />
 
-          <DailyForecast dailyForecastData={weather?.daily!} />
+            <DailyForecast dailyForecastData={weather.daily} />
 
-          <HourlyForecast
-            hourlyForecastData={weather?.hourly!}
-            timezone={weather?.timezone!}
-          />
-        </View>
+            <HourlyForecast
+              hourlyForecastData={weather.hourly}
+              timezone={weather.timezone}
+            />
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
