@@ -1,24 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 
-// Strict PICO-8 palette. These are the ONLY colors allowed in the app.
-// Raw swatches (pico names) are the source of truth; semantic aliases map to them.
-const pico = {
+// Strict monochrome palette (Nothing-style). These are the ONLY colors allowed.
+const mono = {
   black: "#000000",
-  darkBlue: "#1D2B53",
-  darkPurple: "#7E2553",
-  darkGreen: "#008751",
-  brown: "#AB5236",
-  darkGrey: "#5F574F",
-  lightGrey: "#C2C3C7",
-  white: "#FFF1E8",
-  red: "#FF004D",
-  orange: "#FFA300",
-  yellow: "#FFEC27",
-  green: "#00E436",
-  blue: "#29ADFF",
-  lavender: "#83769C",
-  pink: "#FF77A8",
-  peach: "#FFCCAA",
+  white: "#FFFFFF",
 };
 
 module.exports = {
@@ -30,35 +15,27 @@ module.exports = {
   ],
   presets: [require("nativewind/preset")],
   theme: {
-    // Replace the default palette entirely so only PICO-8 tokens are available.
+    // Replace the default palette entirely so only monochrome tokens are available.
     colors: {
       transparent: "transparent",
-      // Raw PICO-8 swatches
-      ...pico,
+      ...mono,
       // Semantic aliases (preferred in components)
-      bg: pico.darkBlue,
-      surface: pico.black,
-      surface2: pico.darkPurple,
-      border: pico.lavender,
-      text: pico.white,
-      textDim: pico.lightGrey,
-      textMuted: pico.lavender,
-      accent: pico.red,
-      // Weather-state accents
-      sun: pico.yellow,
-      rain: pico.blue,
-      snow: pico.white,
-      storm: pico.darkPurple,
-      cloud: pico.lightGrey,
-      fog: pico.lavender,
-      overcast: pico.darkGrey,
-      drizzle: pico.blue,
+      bg: "#000000",
+      surface: "#0A0A0A",
+      surface2: "#161616",
+      line: "#2A2A2A",
+      text: "#FFFFFF",
+      textDim: "#8A8A8A",
+      textMuted: "#5A5A5A",
     },
     extend: {
       fontFamily: {
-        pixel: ["Silkscreen_400Regular"],
-        pixelBold: ["Silkscreen_700Bold"],
-        term: ["VT323_400Regular"],
+        // Dot-matrix display font, used sparingly (hero temp + tiny labels).
+        dot: ["Doto_500Medium"],
+        dotBold: ["Doto_700Bold"],
+        // Readable monospace for body text, menus, lists.
+        mono: ["SpaceMono_400Regular"],
+        monoBold: ["SpaceMono_700Bold"],
       },
     },
   },
