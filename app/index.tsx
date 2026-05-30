@@ -30,6 +30,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import SearchBar from "../components/SearchBar";
 
+// PICO-8 hex values for places that need raw colors (Ionicons, RefreshControl).
+const C = {
+  text: "#FFF1E8",
+  sun: "#FFEC27",
+  accent: "#FF004D",
+};
+
 export default function Index() {
   const { query, lat, lon } = useLocalSearchParams();
   const router = useRouter();
@@ -56,8 +63,8 @@ export default function Index() {
 
   Animated.timing(unitsOp, {
     toValue: isUnitDropdownOpen ? 1 : 0,
-    duration: 300,
-    easing: Easing.out(Easing.cubic),
+    duration: 150,
+    easing: Easing.linear,
     useNativeDriver: true,
   }).start();
 
@@ -68,197 +75,201 @@ export default function Index() {
   const isAllImperial =
     tempUnit === "f" && windUnit === "mph" && precUnit === "in";
 
+  // Shared classes for the pixel-styled unit option rows.
+  const optionRow = (active: boolean) =>
+    `px-2 py-2.5 flex flex-row justify-between items-center ${
+      active ? "bg-surface2" : ""
+    }`;
+
   return (
-    <SafeAreaView className="flex-1 bg-n900">
+    <SafeAreaView className="flex-1 bg-bg">
       <ScrollView
         contentContainerClassName="px-4 gap-12"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={() => refetch()}
-            tintColor="#ffffff"
+            tintColor={C.text}
           />
         }
       >
         <View className="flex flex-row items-center justify-between">
-          <Text className="text-n0 text-3xl font-briBold">Airi</Text>
+          <Text className="text-text text-2xl font-pixelBold">AIRI</Text>
 
           <View className="flex flex-row items-center gap-2.5">
             <TouchableOpacity
-              className="bg-n800 p-2.5 rounded-lg"
+              className="bg-surface border-2 border-border p-2.5"
               onPress={() => router.push("/locations")}
             >
-              <Ionicons name="bookmark-outline" color={"white"} size={20} />
+              <Ionicons name="bookmark" color={C.text} size={20} />
             </TouchableOpacity>
 
             <View className="relative">
-            <Pressable
-              className="flex flex-row gap-2.5 items-center font-dm bg-n800 p-2.5 rounded-lg"
-              onPress={() => setIsUnitDropdownOpen(!isUnitDropdownOpen)}
-            >
-              <Ionicons name="settings-outline" color={"white"} size={20} />
-              <Text className="text-white ">Units</Text>
-              <Ionicons
-                name={
-                  isUnitDropdownOpen
-                    ? `chevron-up-outline`
-                    : `chevron-down-outline`
-                }
-                color={"white"}
-                size={18}
-              />
-            </Pressable>
-
-            <Animated.View
-              className={`absolute top-14 right-0 px-2 py-1.5 flex flex-col w-[220px] bg-n800 border-[1px] border-n600 rounded-xl z-10 gap-1`}
-              style={{ opacity: unitsOp }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  if (!isAllImperial) {
-                    dispatch(toImperial());
-                  } else {
-                    dispatch(toMetric());
-                  }
-                }}
+              <Pressable
+                className="flex flex-row gap-2.5 items-center bg-surface border-2 border-border p-2.5"
+                onPress={() => setIsUnitDropdownOpen(!isUnitDropdownOpen)}
               >
-                <Text className="px-2 py-2.5 font-dm text-xl text-n0">
-                  {isAllImperial ? "Switch to Metric" : "Switch to Imperial"}
-                </Text>
-              </TouchableOpacity>
+                <Ionicons name="settings" color={C.text} size={20} />
+                <Text className="text-text font-pixel text-[10px]">UNITS</Text>
+                <Ionicons
+                  name={isUnitDropdownOpen ? `chevron-up` : `chevron-down`}
+                  color={C.text}
+                  size={18}
+                />
+              </Pressable>
 
-              <View className="flex flex-col gap-2">
-                <Text className="pt-1.5 px-2 font-dm text-lg text-n200">
-                  Temperature
-                </Text>
+              <Animated.View
+                className={`absolute top-16 right-0 px-2 py-1.5 flex flex-col w-[230px] bg-surface border-2 border-border z-10 gap-1`}
+                style={{ opacity: unitsOp }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    if (!isAllImperial) {
+                      dispatch(toImperial());
+                    } else {
+                      dispatch(toMetric());
+                    }
+                  }}
+                >
+                  <Text className="px-2 py-2.5 font-term text-2xl text-text">
+                    {isAllImperial ? "Switch to Metric" : "Switch to Imperial"}
+                  </Text>
+                </TouchableOpacity>
 
-                <View className="flex flex-col gap-1 pb-0.5 border-b-[1px] border-n300/20">
-                  <TouchableOpacity
-                    className={`px-2 py-2.5 flex flex-row justify-between items-center ${tempUnit === "c" && "bg-n700"} rounded-lg`}
-                    onPress={() => {
-                      if (tempUnit === "c") return;
-                      dispatch(tempUnitToggle());
-                    }}
-                  >
-                    <Text className="text-xl font-dm text-n0">
-                      Celcius {`(\u00B0C)`}
-                    </Text>
-                    {tempUnit === "c" && (
-                      <Ionicons name="checkmark" size={20} color={"white"} />
-                    )}
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    className={`px-2 py-2.5 flex flex-row justify-between items-center ${tempUnit === "f" && "bg-n700"} rounded-lg`}
-                    onPress={() => {
-                      if (tempUnit === "f") return;
-                      dispatch(tempUnitToggle());
-                    }}
-                  >
-                    <Text className="text-xl font-dm text-n0">
-                      Fahrenheit {`(\u00B0F)`}
-                    </Text>
-                    {tempUnit === "f" && (
-                      <Ionicons name="checkmark" size={20} color={"white"} />
-                    )}
-                  </TouchableOpacity>
+                <View className="flex flex-col gap-2">
+                  <Text className="pt-1.5 px-2 font-pixel text-[10px] uppercase text-textMuted">
+                    Temperature
+                  </Text>
+
+                  <View className="flex flex-col gap-1 pb-1 border-b-2 border-border">
+                    <TouchableOpacity
+                      className={optionRow(tempUnit === "c")}
+                      onPress={() => {
+                        if (tempUnit === "c") return;
+                        dispatch(tempUnitToggle());
+                      }}
+                    >
+                      <Text className="text-2xl font-term text-text">
+                        Celcius {`(°C)`}
+                      </Text>
+                      {tempUnit === "c" && (
+                        <Ionicons name="checkmark" size={20} color={C.sun} />
+                      )}
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      className={optionRow(tempUnit === "f")}
+                      onPress={() => {
+                        if (tempUnit === "f") return;
+                        dispatch(tempUnitToggle());
+                      }}
+                    >
+                      <Text className="text-2xl font-term text-text">
+                        Fahrenheit {`(°F)`}
+                      </Text>
+                      {tempUnit === "f" && (
+                        <Ionicons name="checkmark" size={20} color={C.sun} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
 
-              <View className="flex flex-col gap-2">
-                <Text className="pt-1.5 px-2 font-dm text-lg text-n200">
-                  Wind Speed
-                </Text>
+                <View className="flex flex-col gap-2">
+                  <Text className="pt-1.5 px-2 font-pixel text-[10px] uppercase text-textMuted">
+                    Wind Speed
+                  </Text>
 
-                <View className="flex flex-col gap-1 pb-0.5 border-b-[1px] border-n300/20">
-                  <TouchableOpacity
-                    className={`px-2 py-2.5 flex flex-row justify-between items-center ${windUnit === "kmh" && "bg-n700"} rounded-lg`}
-                    onPress={() => {
-                      if (windUnit === "kmh") return;
-                      dispatch(windUnitToggle());
-                    }}
-                  >
-                    <Text className="text-xl font-dm text-n0">km/h</Text>
-                    {windUnit === "kmh" && (
-                      <Ionicons name="checkmark" size={20} color={"white"} />
-                    )}
-                  </TouchableOpacity>
+                  <View className="flex flex-col gap-1 pb-1 border-b-2 border-border">
+                    <TouchableOpacity
+                      className={optionRow(windUnit === "kmh")}
+                      onPress={() => {
+                        if (windUnit === "kmh") return;
+                        dispatch(windUnitToggle());
+                      }}
+                    >
+                      <Text className="text-2xl font-term text-text">km/h</Text>
+                      {windUnit === "kmh" && (
+                        <Ionicons name="checkmark" size={20} color={C.sun} />
+                      )}
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    className={`px-2 py-2.5 flex flex-row justify-between items-center ${windUnit === "mph" && "bg-n700"} rounded-lg`}
-                    onPress={() => {
-                      if (windUnit === "mph") return;
-                      dispatch(windUnitToggle());
-                    }}
-                  >
-                    <Text className="text-xl font-dm text-n0">mph</Text>
-                    {windUnit === "mph" && (
-                      <Ionicons name="checkmark" size={20} color={"white"} />
-                    )}
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      className={optionRow(windUnit === "mph")}
+                      onPress={() => {
+                        if (windUnit === "mph") return;
+                        dispatch(windUnitToggle());
+                      }}
+                    >
+                      <Text className="text-2xl font-term text-text">mph</Text>
+                      {windUnit === "mph" && (
+                        <Ionicons name="checkmark" size={20} color={C.sun} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
 
-              <View className="flex flex-col gap-2">
-                <Text className="pt-1.5 px-2 font-dm text-lg text-n200">
-                  Precipitation
-                </Text>
+                <View className="flex flex-col gap-2">
+                  <Text className="pt-1.5 px-2 font-pixel text-[10px] uppercase text-textMuted">
+                    Precipitation
+                  </Text>
 
-                <View className="flex flex-col gap-1">
-                  <TouchableOpacity
-                    className={`px-2 py-2.5 flex flex-row justify-between items-center ${precUnit === "mm" && "bg-n700"} rounded-lg`}
-                    onPress={() => {
-                      if (precUnit === "mm") return;
-                      dispatch(precUnitToggle());
-                    }}
-                  >
-                    <Text className="text-xl font-dm text-n0">
-                      Millimeters (mm)
-                    </Text>
-                    {precUnit === "mm" && (
-                      <Ionicons name="checkmark" size={20} color={"white"} />
-                    )}
-                  </TouchableOpacity>
+                  <View className="flex flex-col gap-1">
+                    <TouchableOpacity
+                      className={optionRow(precUnit === "mm")}
+                      onPress={() => {
+                        if (precUnit === "mm") return;
+                        dispatch(precUnitToggle());
+                      }}
+                    >
+                      <Text className="text-2xl font-term text-text">
+                        Millimeters (mm)
+                      </Text>
+                      {precUnit === "mm" && (
+                        <Ionicons name="checkmark" size={20} color={C.sun} />
+                      )}
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    className={`px-2 py-2.5 flex flex-row justify-between items-center ${precUnit === "in" && "bg-n700"} rounded-lg`}
-                    onPress={() => {
-                      if (precUnit === "in") return;
-                      dispatch(precUnitToggle());
-                    }}
-                  >
-                    <Text className="text-xl font-dm text-n0">Inches (in)</Text>
-                    {precUnit === "in" && (
-                      <Ionicons name="checkmark" size={20} color={"white"} />
-                    )}
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      className={optionRow(precUnit === "in")}
+                      onPress={() => {
+                        if (precUnit === "in") return;
+                        dispatch(precUnitToggle());
+                      }}
+                    >
+                      <Text className="text-2xl font-term text-text">
+                        Inches (in)
+                      </Text>
+                      {precUnit === "in" && (
+                        <Ionicons name="checkmark" size={20} color={C.sun} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            </Animated.View>
+              </Animated.View>
             </View>
           </View>
         </View>
 
-        <Text className="text-n0 text-7xl font-briBold text-center">
-          How's the sky looking today?
+        <Text className="text-text text-base font-pixel text-center leading-7 uppercase">
+          How&apos;s the sky looking today?
         </Text>
 
         <SearchBar />
 
         {isError ? (
-          <View className="bg-n800 border-[1px] border-n600 rounded-xl p-6 flex flex-col items-center gap-4">
-            <Ionicons name="cloud-offline-outline" size={40} color={"white"} />
-            <Text className="text-n0 text-2xl font-dmBold text-center">
-              Something went wrong
+          <View className="bg-surface border-2 border-border p-6 flex flex-col items-center gap-4">
+            <Ionicons name="cloud-offline" size={40} color={C.accent} />
+            <Text className="text-text text-sm font-pixelBold text-center">
+              SOMETHING WENT WRONG
             </Text>
-            <Text className="text-n200 text-lg font-dm text-center">
+            <Text className="text-textDim text-xl font-term text-center">
               We couldn&apos;t load the weather. Check your connection and try
               again.
             </Text>
             <TouchableOpacity
-              className="px-6 py-3 bg-b500 rounded-xl"
+              className="px-6 py-3 bg-accent border-2 border-text"
               onPress={() => refetch()}
             >
-              <Text className="text-n0 text-xl font-dm">Retry</Text>
+              <Text className="text-text text-xs font-pixel">RETRY</Text>
             </TouchableOpacity>
           </View>
         ) : isLoading || !weather ? (
