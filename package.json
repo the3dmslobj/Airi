@@ -12,6 +12,8 @@
     "postinstall": "node ./scripts/ensure-reanimated-edge-to-edge.js && patch-package"
   },
   "dependencies": {
+    "@expo-google-fonts/silkscreen": "^0.4.2",
+    "@expo-google-fonts/vt323": "^0.4.1",
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@reduxjs/toolkit": "^2.9.0",
