@@ -1,9 +1,8 @@
 import CurrentWeather from "@/components/CurrentWeather";
 import DailyForecast from "@/components/DailyForecast";
 import HourlyForecast from "@/components/HourlyForecast";
-import { WeatherResponse } from "@/interfaces/response.interface";
-import { fetchWeatherData } from "@/services/api";
 import { useCurrentLocation } from "@/services/location";
+import { weatherQueryOptions } from "@/services/queryOptions";
 import {
   precUnitToggle,
   tempUnitToggle,
@@ -13,8 +12,9 @@ import {
 } from "@/slices/unitSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Animated,
   Easing,
@@ -31,11 +31,17 @@ import SearchBar from "../components/SearchBar";
 export default function Index() {
   const { query, lat, lon } = useLocalSearchParams();
 
-  const { location, error } = useCurrentLocation();
+  const { location } = useCurrentLocation();
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const [weather, setWeather] = useState<WeatherResponse | null>(null);
+  // Searched city coords (from params) take priority over the device location.
+  const effectiveLat = lat ? Number(lat) : location?.coords.latitude;
+  const effectiveLon = lon ? Number(lon) : location?.coords.longitude;
+
+  const { data: weather } = useQuery(
+    weatherQueryOptions(effectiveLat, effectiveLon)
+  );
 
   const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState<boolean>(false);
 
@@ -47,38 +53,6 @@ export default function Index() {
     easing: Easing.out(Easing.cubic),
     useNativeDriver: true,
   }).start();
-
-  useEffect(() => {
-    async function getWeather() {
-      if (lat && lon) {
-        const weatherData = await fetchWeatherData(Number(lat), Number(lon));
-
-        if (!weatherData) return;
-        setWeather(weatherData);
-        return;
-      }
-
-      if (!location?.coords) return;
-
-      const { latitude, longitude } = location.coords;
-
-      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-        console.warn(
-          "Skipping weather fetch due to invalid coordinates",
-          latitude,
-          longitude
-        );
-        return;
-      }
-
-      const weatherData = await fetchWeatherData(latitude, longitude);
-
-      if (!weatherData) return;
-      setWeather(weatherData);
-    }
-
-    getWeather();
-  }, [location, lat, lon]);
 
   const { tempUnit, windUnit, precUnit } = useSelector(
     (store: RootState) => store.units
