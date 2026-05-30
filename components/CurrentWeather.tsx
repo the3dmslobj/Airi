@@ -1,4 +1,4 @@
-import currentBg from "@/assets/images/current-bg.png";
+import PixelWeather from "@/components/PixelWeather";
 import { CurrentWeatherType } from "@/interfaces/weather.interface";
 import { reverseGeocode } from "@/services/api";
 import { useCurrentLocation } from "@/services/location";
@@ -6,12 +6,13 @@ import { addLocation, removeLocation } from "@/slices/savedLocationsSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { getCurrentDate } from "@/utils/currentDate";
 import { convertPrec, convertTemp, convertWind } from "@/utils/utils";
-import { getWeatherImageSource } from "@/utils/weatherImage";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Image, ImageBackground, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+
+const C = { text: "#FFF1E8", sun: "#FFEC27" };
 
 interface CurrentWeatherPropsType {
   currentWeatherData: CurrentWeatherType;
@@ -23,7 +24,7 @@ const CurrentWeather = ({
   timezone,
 }: CurrentWeatherPropsType) => {
   const { lat, lon, id, name, country } = useLocalSearchParams();
-  const { location, error } = useCurrentLocation();
+  const { location } = useCurrentLocation();
 
   const dispatch = useDispatch<AppDispatch>();
   const savedItems = useSelector(
@@ -82,15 +83,22 @@ const CurrentWeather = ({
     (state: RootState) => state.units
   );
 
+  const DetailCard = ({ label, value }: { label: string; value: string }) => (
+    <View className="p-5 bg-surface border-2 border-border flex flex-col gap-4 flex-1">
+      <Text className="text-textMuted text-xs font-pixel uppercase">
+        {label}
+      </Text>
+      <Text className="text-text text-4xl font-term">{value}</Text>
+    </View>
+  );
+
   return (
     <View className="flex flex-col gap-8">
-      <ImageBackground
-        source={currentBg}
-        resizeMode="stretch"
-        className="py-16 flex flex-col items-center gap-4 w-full"
-      >
-        <View className="flex flex-row items-center gap-2">
-          <Text className="text-4xl font-dmBold text-n0">{city}</Text>
+      <View className="bg-surface border-2 border-border py-10 flex flex-col items-center gap-4 w-full">
+        <View className="flex flex-row items-center gap-2 px-4">
+          <Text className="text-base font-pixelBold text-text text-center">
+            {city}
+          </Text>
           {isSearchedCity && (
             <TouchableOpacity
               hitSlop={8}
@@ -113,57 +121,43 @@ const CurrentWeather = ({
               <Ionicons
                 name={isSaved ? "star" : "star-outline"}
                 size={24}
-                color={isSaved ? "#facc15" : "white"}
+                color={isSaved ? C.sun : C.text}
               />
             </TouchableOpacity>
           )}
         </View>
-        <Text className="text-2xl font-dm text-n200">{currentDate}</Text>
-        <View className="flex flex-row gap-5 items-center">
-          <Image
-            source={getWeatherImageSource(
-              currentWeatherData?.weather_code as number
-            )}
-            className="w-40 h-40"
+        <Text className="text-xl font-term text-textDim">{currentDate}</Text>
+        <View className="flex flex-row gap-4 items-center">
+          <PixelWeather
+            code={currentWeatherData?.weather_code as number}
+            size={128}
+            animated
           />
-          <Text className="text-9xl font-dmSemiBoldItalic pt-10 pr-1 text-n0">{`${currentWeatherData ? convertTemp(Number(currentWeatherData?.temperature_2m), tempUnit) : "-"}\u00B0`}</Text>
+          <Text className="text-8xl font-term text-text">{`${currentWeatherData ? convertTemp(Number(currentWeatherData?.temperature_2m), tempUnit) : "-"}°`}</Text>
         </View>
-      </ImageBackground>
+      </View>
 
       <View className="flex flex-col gap-7 flex-wrap">
         <View className="flex flex-row gap-7">
-          <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
-            <Text className="text-n200 text-2xl font-dm">Feels Like</Text>
-            <Text className="text-n0 text-4xl font-dmLight">{`${convertTemp(Number(currentWeatherData?.apparent_temperature), tempUnit)}\u00B0`}</Text>
-          </View>
-
-          <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
-            <Text className="text-n200 text-2xl font-dm">Humidity</Text>
-            <Text className="text-n0 text-4xl font-dmLight">
-              {currentWeatherData?.relative_humidity_2m}%
-            </Text>
-          </View>
+          <DetailCard
+            label="Feels Like"
+            value={`${convertTemp(Number(currentWeatherData?.apparent_temperature), tempUnit)}°`}
+          />
+          <DetailCard
+            label="Humidity"
+            value={`${currentWeatherData?.relative_humidity_2m}%`}
+          />
         </View>
 
         <View className="flex flex-row gap-7">
-          <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
-            <Text className="text-n200 text-2xl font-dm">Wind</Text>
-            <Text className="text-n0 text-4xl font-dmLight">
-              {convertWind(
-                Number(currentWeatherData?.wind_speed_10m),
-                windUnit
-              )}{" "}
-              {windUnit === "kmh" ? "km/h" : "mph"}
-            </Text>
-          </View>
-
-          <View className="p-5 bg-n800 flex flex-col gap-6 rounded-xl border-[1px] border-n600 flex-1">
-            <Text className="text-n200 text-2xl font-dm">Precipitation</Text>
-            <Text className="text-n0 text-4xl font-dmLight">
-              {convertPrec(Number(currentWeatherData?.precipitation), precUnit)}{" "}
-              {precUnit === "mm" ? "mm" : "in"}
-            </Text>
-          </View>
+          <DetailCard
+            label="Wind"
+            value={`${convertWind(Number(currentWeatherData?.wind_speed_10m), windUnit)} ${windUnit === "kmh" ? "km/h" : "mph"}`}
+          />
+          <DetailCard
+            label="Precipitation"
+            value={`${convertPrec(Number(currentWeatherData?.precipitation), precUnit)} ${precUnit === "mm" ? "mm" : "in"}`}
+          />
         </View>
       </View>
     </View>
