@@ -45,6 +45,8 @@ const SearchBar = () => {
           placeholder="Search for a place..."
           className="text-text text-xl py-4 font-mono flex-1"
           placeholderTextColor={C.muted}
+          cursorColor={C.text}
+          selectionColor={C.text}
           onChangeText={(text) => setSearchQuery(text)}
           value={searchQuery as string}
         />
