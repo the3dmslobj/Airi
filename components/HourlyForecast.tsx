@@ -1,3 +1,4 @@
+import PixelWeather from "@/components/PixelWeather";
 import { HourlyWeatherType } from "@/interfaces/weather.interface";
 import { RootState } from "@/store/store";
 import { getCurrentWeekday } from "@/utils/currentDate";
@@ -7,19 +8,19 @@ import {
   WEEKDAYS_LONG,
 } from "@/utils/hourlyFilter";
 import { convertTemp, isoToTime12h } from "@/utils/utils";
-import { getWeatherImageSource } from "@/utils/weatherImage";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Easing,
-  Image,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useSelector } from "react-redux";
+
+const C = { text: "#FFF1E8" };
 
 interface HourlyForecastPropsType {
   hourlyForecastData: HourlyWeatherType;
@@ -49,8 +50,8 @@ const HourlyForecast = ({
 
   Animated.timing(daysOp, {
     toValue: isDayDropDownOpen ? 1 : 0,
-    duration: 300,
-    easing: Easing.out(Easing.cubic),
+    duration: 150,
+    easing: Easing.linear,
     useNativeDriver: true,
   }).start();
 
@@ -64,62 +65,44 @@ const HourlyForecast = ({
     setHourlyWeatherData(res);
   }, [currentDate, hourlyForecastData]);
 
-  /*
-  useEffect(() => {
-    function setCurrentDateFunc() {
-      const date = getCurrentDate(timezone);
-      if (!date) return;
-      setCurrentDate(date);
-    }
-
-    setCurrentDateFunc();
-  }, [timezone]);
-  */
-
-  const { tempUnit, windUnit, precUnit } = useSelector(
-    (state: RootState) => state.units
-  );
+  const { tempUnit } = useSelector((state: RootState) => state.units);
 
   return (
-    <View className="flex flex-col gap-4 px-4 py-5 bg-n800 rounded-xl -mt-2">
+    <View className="flex flex-col gap-4 px-4 py-5 bg-surface border-2 border-border -mt-2">
       <View className="flex flex-row items-center justify-between w-full">
-        <Text className="text-[22px] text-n0 font-dmSemiBold">
+        <Text className="text-sm text-text font-pixel uppercase">
           Hourly Forecast
         </Text>
 
         <View className="relative">
           <TouchableOpacity
-            className="flex flex-row px-4 gap-3 items-center bg-n600 py-2 rounded-lg"
+            className="flex flex-row px-4 gap-3 items-center bg-surface2 border-2 border-border py-2"
             onPress={() => setIsDayDropDownOpen(!isDayDropDownOpen)}
           >
-            <Text className="font-dm text-xl text-n0">
+            <Text className="font-term text-xl text-text">
               {currentDate.split(", ")[0]}
             </Text>
             <Ionicons
-              name={
-                isDayDropDownOpen
-                  ? `chevron-up-outline`
-                  : `chevron-down-outline`
-              }
-              color={"white"}
+              name={isDayDropDownOpen ? `chevron-up` : `chevron-down`}
+              color={C.text}
               size={18}
             />
           </TouchableOpacity>
 
           <Animated.View
-            className={`bg-n800 border-[1px] border-n600 absolute top-14 flex flex-col gap-1 p-2 rounded-xl w-[180px] right-0 z-10`}
+            className={`bg-surface border-2 border-border absolute top-14 flex flex-col gap-1 p-2 w-[180px] right-0 z-10`}
             style={{ opacity: daysOp }}
           >
             {WEEKDAYS_LONG.map((d, i) => (
               <TouchableOpacity
-                className={`p-2.5 ${d === currentDate.split(", ")[0] ? "bg-n700" : ""} rounded-lg`}
+                className={`p-2.5 ${d === currentDate.split(", ")[0] ? "bg-surface2" : ""}`}
                 key={i}
                 onPress={() => {
                   setCurrentDate(d);
                   setIsDayDropDownOpen(false);
                 }}
               >
-                <Text className="font-dm text-xl text-n0">{d}</Text>
+                <Text className="font-term text-xl text-text">{d}</Text>
               </TouchableOpacity>
             ))}
           </Animated.View>
@@ -130,14 +113,17 @@ const HourlyForecast = ({
         {hourlyWeatherData?.time?.map((t, i) => (
           <View
             key={i}
-            className="flex flex-row items-center py-2.5 pl-3 pr-4 bg-n700 rounded-lg border-[1px] border-n600 gap-2"
+            className="flex flex-row items-center py-2.5 pl-3 pr-4 bg-surface2 border-2 border-border gap-2"
           >
-            <Image
-              source={getWeatherImageSource(hourlyWeatherData?.weather_code[i])}
-              className="w-16 h-16"
+            <PixelWeather
+              code={hourlyWeatherData?.weather_code[i]}
+              size={44}
+              animated={false}
             />
-            <Text className="text-2xl font-dm text-n0">{isoToTime12h(t)}</Text>
-            <Text className="ml-auto text-2xl font-dm text-n0">{`${convertTemp(Number(hourlyForecastData?.temperature_2m[i]), tempUnit)}\u00B0`}</Text>
+            <Text className="text-2xl font-term text-text">
+              {isoToTime12h(t)}
+            </Text>
+            <Text className="ml-auto text-2xl font-term text-text">{`${convertTemp(Number(hourlyForecastData?.temperature_2m[i]), tempUnit)}°`}</Text>
           </View>
         ))}
       </View>
