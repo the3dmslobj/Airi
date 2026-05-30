@@ -13,6 +13,9 @@ SplashScreen.preventAutoHideAsync().catch(() => {
   // ignore if the splash screen has already been prevented from auto hiding
 });
 
+// Created once at module scope so the cache persists across re-renders.
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     "bri-bold": require("../assets/fonts/Bricolage_Grotesque/BricolageGrotesque-Bold.ttf"),
@@ -38,8 +41,6 @@ export default function RootLayout() {
   if (!fontsLoaded) {
     return null;
   }
-
-  const queryClient = new QueryClient();
 
   return (
     <QueryClientProvider client={queryClient}>
