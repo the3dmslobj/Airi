@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
-const C = { text: "#FFF1E8", muted: "#83769C", sun: "#FFEC27", rain: "#29ADFF" };
+const C = { text: "#FFFFFF", muted: "#5A5A5A" };
 
 const SearchBar = () => {
   const router = useRouter();
@@ -39,11 +39,11 @@ const SearchBar = () => {
 
   return (
     <View className="w-full flex flex-col gap-3 relative">
-      <View className="flex flex-row items-center bg-surface border-2 border-border px-6 gap-4">
-        <Ionicons name="search" color={C.text} size={22} />
+      <View className="flex flex-row items-center bg-surface border border-dotted border-line px-6 gap-4">
+        <Ionicons name="search-outline" color={C.text} size={22} />
         <TextInput
           placeholder="Search for a place..."
-          className="text-text text-2xl py-4 font-term flex-1"
+          className="text-text text-xl py-4 font-mono flex-1"
           placeholderTextColor={C.muted}
           onChangeText={(text) => setSearchQuery(text)}
           value={searchQuery as string}
@@ -62,14 +62,14 @@ const SearchBar = () => {
       </View>
 
       <TouchableOpacity
-        className="w-full items-center justify-center py-4 bg-accent border-2 border-text"
+        className="w-full items-center justify-center py-4 bg-text"
         onPress={() => router.setParams({ query: searchQuery })}
       >
-        <Text className="text-text text-xs font-pixel">SEARCH</Text>
+        <Text className="text-bg text-sm font-mono uppercase">Search</Text>
       </TouchableOpacity>
 
       {String(query)?.trim() && query !== undefined && (
-        <View className="flex flex-col bg-surface absolute top-36 w-full mt-2 p-2 z-10 border-2 border-border gap-1">
+        <View className="flex flex-col bg-surface absolute top-36 w-full mt-2 p-2 z-10 border border-dotted border-line gap-1">
           {!isPending ? (
             cities?.length !== 0 ? (
               cities?.map((city) => {
@@ -94,7 +94,7 @@ const SearchBar = () => {
                         setSearchQuery("");
                       }}
                     >
-                      <Text className="text-xl font-term text-text">
+                      <Text className="text-base font-mono text-text">
                         {city?.name + ", " + city?.country}
                       </Text>
                     </TouchableOpacity>
@@ -120,19 +120,19 @@ const SearchBar = () => {
                       <Ionicons
                         name={isSaved ? "star" : "star-outline"}
                         size={22}
-                        color={isSaved ? C.sun : C.text}
+                        color={C.text}
                       />
                     </TouchableOpacity>
                   </View>
                 );
               })
             ) : (
-              <Text className="text-text text-center font-term text-xl py-2.5">
+              <Text className="text-textDim text-center font-mono text-base py-2.5">
                 Sorry, we can&apos;t find the city.
               </Text>
             )
           ) : (
-            <ActivityIndicator size={"small"} color={C.rain} />
+            <ActivityIndicator size={"small"} color={C.text} />
           )}
         </View>
       )}

@@ -7,7 +7,7 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
-const C = { text: "#FFF1E8", rain: "#29ADFF", accent: "#FF004D" };
+const C = { text: "#FFFFFF", dim: "#8A8A8A" };
 
 export default function Locations() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function Locations() {
         <TouchableOpacity hitSlop={8} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={28} color={C.text} />
         </TouchableOpacity>
-        <Text className="text-text text-base font-pixelBold uppercase">
+        <Text className="text-text text-base font-monoBold uppercase">
           Saved Locations
         </Text>
       </View>
@@ -35,22 +35,22 @@ export default function Locations() {
       <ScrollView contentContainerClassName="px-4 gap-2 pt-2">
         {/* Device location, always available */}
         <TouchableOpacity
-          className="flex flex-row items-center gap-3 bg-surface border-2 border-border px-4 py-4"
+          className="flex flex-row items-center gap-3 bg-surface border border-dotted border-line px-4 py-4"
           onPress={() => goHome({ lat: "", lon: "", name: "", country: "" })}
         >
-          <Ionicons name="navigate" size={22} color={C.rain} />
-          <Text className="text-text text-xl font-term">My Location</Text>
+          <Ionicons name="navigate-outline" size={22} color={C.text} />
+          <Text className="text-text text-base font-mono">My Location</Text>
         </TouchableOpacity>
 
         {savedItems.length === 0 ? (
-          <Text className="text-textMuted text-xl font-term text-center px-6 py-8">
+          <Text className="text-textMuted text-base font-mono text-center px-6 py-8">
             No saved locations yet. Star a city from search to add it here.
           </Text>
         ) : (
           savedItems.map((item) => (
             <View
               key={item.id}
-              className="flex flex-row items-center bg-surface border-2 border-border px-4 py-4"
+              className="flex flex-row items-center bg-surface border border-dotted border-line px-4 py-4"
             >
               <TouchableOpacity
                 className="flex-1 flex flex-row items-center gap-3"
@@ -64,8 +64,8 @@ export default function Locations() {
                   })
                 }
               >
-                <Ionicons name="location-outline" size={22} color={C.text} />
-                <Text className="text-text text-xl font-term">
+                <Ionicons name="location-outline" size={22} color={C.dim} />
+                <Text className="text-text text-base font-mono">
                   {item.name + ", " + item.country}
                 </Text>
               </TouchableOpacity>
@@ -74,7 +74,7 @@ export default function Locations() {
                 hitSlop={8}
                 onPress={() => dispatch(removeLocation(item.id))}
               >
-                <Ionicons name="trash-outline" size={22} color={C.accent} />
+                <Ionicons name="trash-outline" size={22} color={C.text} />
               </TouchableOpacity>
             </View>
           ))
