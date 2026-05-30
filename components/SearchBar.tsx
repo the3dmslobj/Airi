@@ -84,6 +84,7 @@ const SearchBar = () => {
                         router.setParams({
                           lat: city.latitude,
                           lon: city.longitude,
+                          id: city.id,
                           name: city.name,
                           country: city.country,
                           query: "",

@@ -2,14 +2,16 @@ import currentBg from "@/assets/images/current-bg.png";
 import { CurrentWeatherType } from "@/interfaces/weather.interface";
 import { reverseGeocode } from "@/services/api";
 import { useCurrentLocation } from "@/services/location";
-import { RootState } from "@/store/store";
+import { addLocation, removeLocation } from "@/slices/savedLocationsSlice";
+import { AppDispatch, RootState } from "@/store/store";
 import { getCurrentDate } from "@/utils/currentDate";
 import { convertPrec, convertTemp, convertWind } from "@/utils/utils";
 import { getWeatherImageSource } from "@/utils/weatherImage";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Image, ImageBackground, Text, View } from "react-native";
-import { useSelector } from "react-redux";
+import { Image, ImageBackground, Text, TouchableOpacity, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
 interface CurrentWeatherPropsType {
   currentWeatherData: CurrentWeatherType;
@@ -20,8 +22,23 @@ const CurrentWeather = ({
   currentWeatherData,
   timezone,
 }: CurrentWeatherPropsType) => {
-  const { lat, lon } = useLocalSearchParams();
+  const { lat, lon, id, name, country } = useLocalSearchParams();
   const { location, error } = useCurrentLocation();
+
+  const dispatch = useDispatch<AppDispatch>();
+  const savedItems = useSelector(
+    (state: RootState) => state.savedLocations.items
+  );
+
+  // A searched city carries id/name/country params; the device location does not.
+  const searchedId = id ? Number(id) : null;
+  const isSearchedCity =
+    searchedId !== null &&
+    Number.isFinite(searchedId) &&
+    Boolean(lat) &&
+    Boolean(lon);
+  const isSaved =
+    isSearchedCity && savedItems.some((item) => item.id === searchedId);
 
   const [city, setCity] = useState<string>("");
 
@@ -72,7 +89,35 @@ const CurrentWeather = ({
         resizeMode="stretch"
         className="py-16 flex flex-col items-center gap-4 w-full"
       >
-        <Text className="text-4xl font-dmBold text-n0">{city}</Text>
+        <View className="flex flex-row items-center gap-2">
+          <Text className="text-4xl font-dmBold text-n0">{city}</Text>
+          {isSearchedCity && (
+            <TouchableOpacity
+              hitSlop={8}
+              onPress={() => {
+                if (isSaved) {
+                  dispatch(removeLocation(searchedId as number));
+                } else {
+                  dispatch(
+                    addLocation({
+                      id: searchedId as number,
+                      name: String(name ?? ""),
+                      country: String(country ?? ""),
+                      latitude: Number(lat),
+                      longitude: Number(lon),
+                    })
+                  );
+                }
+              }}
+            >
+              <Ionicons
+                name={isSaved ? "star" : "star-outline"}
+                size={24}
+                color={isSaved ? "#facc15" : "white"}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
         <Text className="text-2xl font-dm text-n200">{currentDate}</Text>
         <View className="flex flex-row gap-5 items-center">
           <Image

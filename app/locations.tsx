@@ -54,6 +54,7 @@ export default function Locations() {
                   goHome({
                     lat: item.latitude,
                     lon: item.longitude,
+                    id: item.id,
                     name: item.name,
                     country: item.country,
                   })
