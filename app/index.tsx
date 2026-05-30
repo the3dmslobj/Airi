@@ -20,6 +20,7 @@ import {
   Animated,
   Easing,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -44,6 +45,7 @@ export default function Index() {
     data: weather,
     isLoading,
     isError,
+    isRefetching,
     refetch,
   } = useQuery(weatherQueryOptions(effectiveLat, effectiveLon));
 
@@ -67,7 +69,16 @@ export default function Index() {
 
   return (
     <SafeAreaView className="flex-1 bg-n900">
-      <ScrollView contentContainerClassName="px-4 gap-12">
+      <ScrollView
+        contentContainerClassName="px-4 gap-12"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => refetch()}
+            tintColor="#ffffff"
+          />
+        }
+      >
         <View className="flex flex-row items-center justify-between">
           <Text className="text-n0 text-3xl font-briBold">Airi</Text>
 
